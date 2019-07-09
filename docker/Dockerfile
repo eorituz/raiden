@@ -8,7 +8,7 @@
 #
 #   docker build . -t raiden
 
-FROM python:3 as builder
+FROM python:3.7 as builder
 
 # use --build-arg RAIDENVERSION=v0.0.3 to build a specific (tagged) version
 ARG REPO=raiden-network/raiden
@@ -22,13 +22,18 @@ RUN git clone -b ${RAIDENVERSION} https://github.com/${REPO} /app/raiden
 
 RUN python3 -m venv /opt/venv
 
-RUN /opt/venv/bin/pip3 install -c /app/raiden/constraints.txt -r /app/raiden/requirements.txt /app/raiden
+ENV PATH="/opt/venv/bin:$PATH"
+
+WORKDIR /app/raiden
+
+RUN make install
 
 
-FROM python:3-slim as runner
+FROM python:3.7-slim as runner
 
 COPY --from=builder /opt/venv /opt/venv
 
 EXPOSE 5001
 
 ENTRYPOINT ["/opt/venv/bin/python3", "-m", "raiden"]
+
