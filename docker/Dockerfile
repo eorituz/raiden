@@ -22,6 +22,8 @@ RUN git clone -b ${RAIDENVERSION} https://github.com/${REPO} /app/raiden
 
 RUN python3 -m venv /opt/venv
 
+ENV PATH="/opt/venv/bin:$PATH"
+
 WORKDIR /app/raiden
 
 RUN make install
